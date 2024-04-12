@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.text.Text?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="bsk.adamniesiobedzki.rsagenerator.MainController">
+    <center>
+        <VBox prefWidth="400" spacing="10">
+            <Text text="RSA Key generator"/>
+            <Label text="Enter PIN:"/>
+            <TextField promptText="Enter PIN" fx:id="pinField"/>
+            <Button text="Generate RSA key" onAction="#generateKey"/>
+        </VBox>
+    </center>
+</BorderPane>

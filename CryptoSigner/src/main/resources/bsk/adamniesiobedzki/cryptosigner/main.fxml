@@ -4,14 +4,10 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.text.Text?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="bsk.adamniesiobedzki.cryptosigner.MainController">
     <center>
         <SplitPane orientation="VERTICAL">
-            <VBox prefWidth="400" spacing="10">
-                <Button text="Generuj klucz RSA" onAction="#generateKey"/>
-                <TextField promptText="Wprowadź PIN" fx:id="pinField"/>
-                <Button text="Szyfruj klucz" onAction="#encryptKey"/>
-            </VBox>
             <VBox prefWidth="400" spacing="10">
                 <Button text="Podpisz dokument" onAction="#signDocument"/>
             </VBox>
