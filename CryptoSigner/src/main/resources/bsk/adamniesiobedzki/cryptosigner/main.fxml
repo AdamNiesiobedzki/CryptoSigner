@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="bsk.adamniesiobedzki.cryptosigner.MainController">
+    <center>
+        <SplitPane orientation="VERTICAL">
+            <VBox prefWidth="400" spacing="10">
+                <Button text="Generuj klucz RSA" onAction="#generateKey"/>
+                <TextField promptText="Wprowadź PIN" fx:id="pinField"/>
+                <Button text="Szyfruj klucz" onAction="#encryptKey"/>
+            </VBox>
+            <VBox prefWidth="400" spacing="10">
+                <Button text="Podpisz dokument" onAction="#signDocument"/>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>
