@@ -22,16 +22,4 @@ public class RsaGeneratorApp extends Application {
     public static void main(String[] args) {
         launch();
     }
-
-    public static void printKeys() {
-        KeyPair keyPair = generateRsaKeys();
-        if (keyPair != null) {
-            byte[] publicKeyBytes = keyPair.getPublic().getEncoded();
-            byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
-            System.out.println("Klucz publiczny: " + java.util.Base64.getEncoder().encodeToString(publicKeyBytes));
-            System.out.println("Klucz prywatny: " + java.util.Base64.getEncoder().encodeToString(privateKeyBytes));
-        }
-    }
-
-
 }

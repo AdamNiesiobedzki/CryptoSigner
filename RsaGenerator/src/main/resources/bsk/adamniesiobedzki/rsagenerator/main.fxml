@@ -9,9 +9,12 @@
     <center>
         <VBox prefWidth="400" spacing="10">
             <Text text="RSA Key generator"/>
-            <Label text="Enter PIN:"/>
+            <Text text="Enter PIN:"/>
             <TextField promptText="Enter PIN" fx:id="pinField"/>
+            <Button text="Select Output Folder" onAction="#selectFolder"/>
+            <Label fx:id="selectedFolderLabel"/>
             <Button text="Generate RSA key" onAction="#generateKey"/>
+            <Label fx:id="errorLabel"/>
         </VBox>
     </center>
 </BorderPane>
