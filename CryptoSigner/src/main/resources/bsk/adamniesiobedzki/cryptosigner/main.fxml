@@ -9,7 +9,40 @@
     <center>
         <SplitPane orientation="VERTICAL">
             <VBox prefWidth="400" spacing="10">
-                <Button text="Podpisz dokument" onAction="#signDocument"/>
+                <Text text="CryptoSigner"/>
+            </VBox>
+            <VBox prefWidth="400" spacing="10">
+                <Text text="Encoder"/>
+
+                <Button text="Select public key file" onAction="#selectPublicKey"/>
+                <Label fx:id="publicKeyPathLabel"/>
+
+                <Button text="Select file to encode" onAction="#selectFileToEncode"/>
+                <Label fx:id="fileToEncodePathLabel"/>
+
+                <Button text="Select Output Folder" onAction="#selectEncoderOutputFolder"/>
+                <Label fx:id="encoderOutputPathLabel"/>
+
+                <Button text="Encode file" onAction="#encodeFile"/>
+                <Label fx:id="encoderErrorLabel"/>
+            </VBox>
+            <VBox prefWidth="400" spacing="10">
+                <Text text="Decoder"/>
+
+                <Text text="Enter PIN:"/>
+                <TextField promptText="Enter PIN" fx:id="pinField"/>
+
+                <Button text="Select private key file" onAction="#selectPrivateKey"/>
+                <Label fx:id="privateKeyPathLabel"/>
+
+                <Button text="Select file to decode" onAction="#selectFileToDecode"/>
+                <Label fx:id="fileToDecodePathLabel"/>
+
+                <Button text="Select Output Folder" onAction="#selectDecoderOutputFolder"/>
+                <Label fx:id="decoderOutputPathLabel"/>
+
+                <Button text="Decode file" onAction="#decodeFile"/>
+                <Label fx:id="decoderErrorLabel"/>
             </VBox>
         </SplitPane>
     </center>
