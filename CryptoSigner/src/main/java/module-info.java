@@ -6,6 +6,7 @@ module bsk.adamniesiobedzki.cryptosigner {
     requires com.dlsc.formsfx;
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
+    requires org.bouncycastle.provider;
 
     opens bsk.adamniesiobedzki.cryptosigner to javafx.fxml;
     exports bsk.adamniesiobedzki.cryptosigner;

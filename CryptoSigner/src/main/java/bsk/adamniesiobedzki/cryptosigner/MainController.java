@@ -1,12 +1,12 @@
 package bsk.adamniesiobedzki.cryptosigner;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,10 +33,10 @@ public class MainController {
 
     private Path encoderOutputPath = Paths.get("");
     private Path decoderOutputPath = Paths.get("");
-    private Path privateKeyPath = Paths.get("");
-    private Path publicKeyPath = Paths.get("");
-    private Path fileToEncodePath = Paths.get("");
-    private Path fileToDecodePath = Paths.get("");
+    private File privateKey = null;
+    private File publicKey = null;
+    private File fileToEncode = null;
+    private File fileToDecode = null;
 
 
     public void selectPublicKey() {
@@ -44,8 +44,8 @@ public class MainController {
         fileChooser.setTitle("Select public key file");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.pem)", "*.pem");
         fileChooser.getExtensionFilters().add(extFilter);
-        publicKeyPath = fileChooser.showOpenDialog(publicKeyPathLabel.getScene().getWindow()).toPath();
-        publicKeyPathLabel.setText("Selected public key: " + publicKeyPath);
+        publicKey = fileChooser.showOpenDialog(publicKeyPathLabel.getScene().getWindow());
+        publicKeyPathLabel.setText("Selected public key: " + publicKey.getAbsolutePath());
     }
 
     public void selectFileToEncode() {
@@ -53,8 +53,8 @@ public class MainController {
         fileChooser.setTitle("Select file to encode");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.txt)", "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
-        fileToEncodePath = fileChooser.showOpenDialog(fileToEncodePathLabel.getScene().getWindow()).toPath();
-        fileToEncodePathLabel.setText("Selected file to encode: " + fileToEncodePath);
+        fileToEncode = fileChooser.showOpenDialog(fileToEncodePathLabel.getScene().getWindow());
+        fileToEncodePathLabel.setText("Selected file to encode: " + fileToEncode.getAbsolutePath());
     }
 
     public void selectEncoderOutputFolder() {
@@ -67,10 +67,10 @@ public class MainController {
     public void selectFileToDecode() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select file to decode");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.txt)", "*.txt");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.enc)", "*.enc");
         fileChooser.getExtensionFilters().add(extFilter);
-        fileToDecodePath = fileChooser.showOpenDialog(fileToDecodePathLabel.getScene().getWindow()).toPath();
-        fileToDecodePathLabel.setText("Selected file to decode: " + fileToDecodePath);
+        fileToDecode = fileChooser.showOpenDialog(fileToDecodePathLabel.getScene().getWindow());
+        fileToDecodePathLabel.setText("Selected file to decode: " + fileToDecode.getAbsolutePath());
     }
 
     public void selectPrivateKey() {
@@ -78,8 +78,8 @@ public class MainController {
         fileChooser.setTitle("Select private key file");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.pem)", "*.pem");
         fileChooser.getExtensionFilters().add(extFilter);
-        privateKeyPath = fileChooser.showOpenDialog(privateKeyPathLabel.getScene().getWindow()).toPath();
-        privateKeyPathLabel.setText("Selected private key: " + privateKeyPath);
+        privateKey = fileChooser.showOpenDialog(privateKeyPathLabel.getScene().getWindow());
+        privateKeyPathLabel.setText("Selected private key: " + privateKey.getAbsolutePath());
 
     }
 
@@ -90,34 +90,36 @@ public class MainController {
         decoderOutputPathLabel.setText("Selected output folder: " + decoderOutputPath);
     }
 
-    public void decodeFile() {
+    public void decodeFile() throws Exception {
         if(!decodeFormValidation()){
             return;
         }
+        FileDecryptor.decryptFile(fileToDecode, decoderOutputPath, privateKey, pinField.getText());
     }
 
-    public void encodeFile() {
-        if(encodeFormValidation()){
+    public void encodeFile() throws Exception {
+        if(!encodeFormValidation()){
             return;
         }
+        FileEncryptor.encryptFile(fileToEncode, encoderOutputPath, publicKey);
     }
 
     private boolean encodeFormValidation(){
         encoderErrorLabel.setText("");
         Path emptyPath = Paths.get("");
-        if (fileToEncodePath.equals(emptyPath)) {
+        if (fileToEncode == null) {
             encoderErrorLabel.setText("Select file to encode!");
             return false;
         }
-        if (!Files.exists(fileToEncodePath)) {
+        if (!Files.exists(fileToEncode.toPath())) {
             encoderErrorLabel.setText("Selected file to encode does not exist!");
             return false;
         }
-        if (publicKeyPath.equals(emptyPath)) {
+        if (publicKey == null) {
             encoderErrorLabel.setText("Select public key!");
             return false;
         }
-        if (!Files.exists(publicKeyPath)) {
+        if (!Files.exists(publicKey.toPath())) {
             encoderErrorLabel.setText("Selected public key does not exist!");
             return false;
         }
@@ -140,19 +142,19 @@ public class MainController {
             decoderErrorLabel.setText("Enter PIN!");
             return false;
         }
-        if (fileToDecodePath.equals(emptyPath)) {
+        if (fileToDecode == null) {
             decoderErrorLabel.setText("Select file to decode!");
             return false;
         }
-        if (!Files.exists(fileToDecodePath)) {
+        if (!Files.exists(fileToDecode.toPath())) {
             decoderErrorLabel.setText("Selected file to decode does not exist!");
             return false;
         }
-        if (privateKeyPath.equals(emptyPath)) {
+        if (privateKey == null) {
             decoderErrorLabel.setText("Select private key!");
             return false;
         }
-        if (!Files.exists(privateKeyPath)) {
+        if (!Files.exists(privateKey.toPath())) {
             decoderErrorLabel.setText("Selected private key does not exist!");
             return false;
         }

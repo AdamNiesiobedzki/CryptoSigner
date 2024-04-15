@@ -8,7 +8,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Random;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -41,20 +40,21 @@ public class RsaGenerator {
                  FileOutputStream privateKeyEncodedFile = new FileOutputStream(path.resolve("private_key_encoded.pem").toString())) {
                 byte[] publicKeyBytes = keyPair.getPublic().getEncoded();
                 byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
-                SecretKey pinKey = getKeyFromPin(pin);
+                byte[] salt = getNextSalt();
+                SecretKey pinKey = getKeyFromPin(pin, salt);
                 IvParameterSpec iv =  generateIv();
                 byte[] privateKeyEncryptedBytes = encrypt(privateKeyBytes, pinKey, iv);
 
-                privateKeyFile.write(Base64.getEncoder().encode(privateKeyBytes));
-                publicKeyFile.write(Base64.getEncoder().encode(publicKeyBytes));
-                privateKeyEncodedFile.write(Base64.getEncoder().encode(privateKeyEncryptedBytes));
+                privateKeyFile.write(privateKeyBytes);
+                publicKeyFile.write(publicKeyBytes);
+                privateKeyEncodedFile.write(privateKeyEncryptedBytes);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static SecretKey getKeyFromPin(String pin)
+    public static SecretKey getKeyFromPin(String pin, byte[] salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(pin.toCharArray(), getNextSalt(), 65536, 256);

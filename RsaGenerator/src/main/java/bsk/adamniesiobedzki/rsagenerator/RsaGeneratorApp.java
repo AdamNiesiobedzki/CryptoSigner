@@ -4,11 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.security.KeyPair;
-
-import static bsk.adamniesiobedzki.rsagenerator.RsaGenerator.generateRsaKeys;
 
 public class RsaGeneratorApp extends Application {
     @Override
