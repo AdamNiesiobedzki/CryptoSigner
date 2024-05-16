@@ -7,61 +7,85 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 
 public class MainController {
     @FXML
-    public Label fileToEncodePathLabel;
+    public Label fileToEncryptPathLabel;
     @FXML
-    public Label encoderOutputPathLabel;
+    public Label encryptorOutputPathLabel;
     @FXML
-    public Label publicKeyPathLabel;
+    public Label encryptorPublicKeyPathLabel;
     @FXML
-    public Label encoderErrorLabel;
+    public Label encryptorErrorLabel;
     @FXML
-    public TextField pinField;
+    public TextField decryptorPinField;
     @FXML
-    public Label privateKeyPathLabel;
+    public Label decryptorPrivateKeyPathLabel;
     @FXML
-    public Label decoderOutputPathLabel;
+    public Label decryptorOutputPathLabel;
     @FXML
-    public Label fileToDecodePathLabel;
+    public Label fileToDecryptPathLabel;
     @FXML
-    public Label decoderErrorLabel;
+    public Label decryptorErrorLabel;
+    @FXML
+    public Label fileToSignLabel;
+    @FXML
+    public Label signerPrivateKeyPathLabel;
+    @FXML
+    public Label signerErrorLabel;
+    @FXML
+    public TextField formSignPin;
+    @FXML
+    public TextField formSignLocation;
+    @FXML
+    public TextField formSignUsername;
+    public Label signerPublicKeyPathLabel;
+    public Label signerFileToVerifyPathLabel;
+    public Label signerSignaturePathLabel;
+    public Label verifySignatureErrorLabel;
 
-    private Path encoderOutputPath = Paths.get("");
-    private Path decoderOutputPath = Paths.get("");
-    private File privateKey = null;
-    private File publicKey = null;
+    private Path encryptorOutputPath = Paths.get("");
+    private Path decryptorOutputPath = Paths.get("");
+    private File decryptorPrivateKey = null;
+    private File encryptorPublicKey = null;
     private File fileToEncode = null;
     private File fileToDecode = null;
+    private File signerPrivateKey = null;
+    private File signerPublicKey = null;
+    private File fileToSign = null;
+    private File fileToVerify = null;
+    private File signatureToVerify = null;
 
 
-    public void selectPublicKey() {
+    public void selectEncryptorPublicKey() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select public key file");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.pem)", "*.pem");
         fileChooser.getExtensionFilters().add(extFilter);
-        publicKey = fileChooser.showOpenDialog(publicKeyPathLabel.getScene().getWindow());
-        publicKeyPathLabel.setText("Selected public key: " + publicKey.getAbsolutePath());
+        encryptorPublicKey = fileChooser.showOpenDialog(encryptorPublicKeyPathLabel.getScene().getWindow());
+        encryptorPublicKeyPathLabel.setText("Selected public key: " + encryptorPublicKey.getAbsolutePath());
     }
 
     public void selectFileToEncode() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select file to encode");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-        fileToEncode = fileChooser.showOpenDialog(fileToEncodePathLabel.getScene().getWindow());
-        fileToEncodePathLabel.setText("Selected file to encode: " + fileToEncode.getAbsolutePath());
+        fileToEncode = fileChooser.showOpenDialog(fileToEncryptPathLabel.getScene().getWindow());
+        fileToEncryptPathLabel.setText("Selected file to encode: " + fileToEncode.getAbsolutePath());
     }
 
-    public void selectEncoderOutputFolder() {
+    public void selectEncryptorOutputFolder() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Output Folder");
-        encoderOutputPath = directoryChooser.showDialog(encoderOutputPathLabel.getScene().getWindow()).toPath();
-        encoderOutputPathLabel.setText("Selected output folder: " + encoderOutputPath);
+        encryptorOutputPath = directoryChooser.showDialog(encryptorOutputPathLabel.getScene().getWindow()).toPath();
+        encryptorOutputPathLabel.setText("Selected output folder: " + encryptorOutputPath);
     }
 
     public void selectFileToDecode() {
@@ -69,8 +93,8 @@ public class MainController {
         fileChooser.setTitle("Select file to decode");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.enc)", "*.enc");
         fileChooser.getExtensionFilters().add(extFilter);
-        fileToDecode = fileChooser.showOpenDialog(fileToDecodePathLabel.getScene().getWindow());
-        fileToDecodePathLabel.setText("Selected file to decode: " + fileToDecode.getAbsolutePath());
+        fileToDecode = fileChooser.showOpenDialog(fileToDecryptPathLabel.getScene().getWindow());
+        fileToDecryptPathLabel.setText("Selected file to decode: " + fileToDecode.getAbsolutePath());
     }
 
     public void selectPrivateKey() {
@@ -78,92 +102,217 @@ public class MainController {
         fileChooser.setTitle("Select private key file");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.pem)", "*.pem");
         fileChooser.getExtensionFilters().add(extFilter);
-        privateKey = fileChooser.showOpenDialog(privateKeyPathLabel.getScene().getWindow());
-        privateKeyPathLabel.setText("Selected private key: " + privateKey.getAbsolutePath());
+        decryptorPrivateKey = fileChooser.showOpenDialog(decryptorPrivateKeyPathLabel.getScene().getWindow());
+        decryptorPrivateKeyPathLabel.setText("Selected private key: " + decryptorPrivateKey.getAbsolutePath());
 
     }
 
-    public void selectDecoderOutputFolder() {
+    public void selectDecryptorOutputFolder() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Output Folder");
-        decoderOutputPath = directoryChooser.showDialog(decoderOutputPathLabel.getScene().getWindow()).toPath();
-        decoderOutputPathLabel.setText("Selected output folder: " + decoderOutputPath);
+        decryptorOutputPath = directoryChooser.showDialog(decryptorOutputPathLabel.getScene().getWindow()).toPath();
+        decryptorOutputPathLabel.setText("Selected output folder: " + decryptorOutputPath);
     }
 
-    public void decodeFile() throws Exception {
-        if(!decodeFormValidation()){
+    public void selectSignPrivateKey() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select private key file");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.pem)", "*.pem");
+        fileChooser.getExtensionFilters().add(extFilter);
+        signerPrivateKey = fileChooser.showOpenDialog(signerPrivateKeyPathLabel.getScene().getWindow());
+        signerPrivateKeyPathLabel.setText("Selected private key: " + signerPrivateKey.getAbsolutePath());
+    }
+
+    public void selectFileToSign() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select file to sign");
+        fileToSign = fileChooser.showOpenDialog(fileToSignLabel.getScene().getWindow());
+        fileToSignLabel.setText("Selected file to sign: " + fileToSign.getAbsolutePath());
+    }
+
+    public void selectSignPublicKey() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select public key file");
+        signerPublicKey = fileChooser.showOpenDialog(signerPublicKeyPathLabel.getScene().getWindow());
+        signerPublicKeyPathLabel.setText("Selected public key: " + signerPublicKey.getAbsolutePath());
+    }
+
+    public void selectSignatureToVerify() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select signature to verify");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("(*.xades)", "*.xades");
+        fileChooser.getExtensionFilters().add(extFilter);
+        signatureToVerify = fileChooser.showOpenDialog(signerSignaturePathLabel.getScene().getWindow());
+        signerSignaturePathLabel.setText("Selected signature: " + signatureToVerify.getAbsolutePath());
+    }
+
+    public void selectFileToVerify() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select file to verify");
+        fileToVerify = fileChooser.showOpenDialog(signerFileToVerifyPathLabel.getScene().getWindow());
+        signerFileToVerifyPathLabel.setText("Selected file to verify: " + fileToVerify.getAbsolutePath());
+    }
+
+    public void decryptFile() throws Exception {
+        if(!decryptFormValidation()){
             return;
         }
-        FileDecryptor.decryptFile(fileToDecode, decoderOutputPath, privateKey, pinField.getText());
+        FileDecryptor.decryptFile(fileToDecode, decryptorOutputPath, decryptorPrivateKey, decryptorPinField.getText());
+        decryptorErrorLabel.setText("File decrypted");
     }
 
-    public void encodeFile() throws Exception {
-        if(!encodeFormValidation()){
+    public void encryptFile() throws Exception {
+        if(!encryptFormValidation()){
             return;
         }
-        FileEncryptor.encryptFile(fileToEncode, encoderOutputPath, publicKey);
+        FileEncryptor.encryptFile(fileToEncode, encryptorOutputPath, encryptorPublicKey);
+        encryptorErrorLabel.setText("File encrypted");
     }
 
-    private boolean encodeFormValidation(){
-        encoderErrorLabel.setText("");
+    public void signFile() throws Exception {
+        if(!signFormValidation()){
+            return;
+        }
+        System.out.println(formSignLocation.getText() + formSignUsername.getText() + formSignPin.getText());
+        FileSigner.signFile(
+                fileToSign,
+                signerPrivateKey,
+                formSignPin.getText(),
+                formSignUsername.getText(),
+                formSignLocation.getText()
+        );
+    }
+
+    public void verifySignature() {
+        if(!verifySignatureFormValidation()){
+            return;
+        }
+        verifySignatureErrorLabel.setText(
+                SignatureVerifier.verifySignature(fileToVerify, signerPublicKey, signatureToVerify));
+    }
+
+    private boolean encryptFormValidation(){
+        encryptorErrorLabel.setText("");
         Path emptyPath = Paths.get("");
         if (fileToEncode == null) {
-            encoderErrorLabel.setText("Select file to encode!");
+            encryptorErrorLabel.setText("Select file to encrypt!");
             return false;
         }
         if (!Files.exists(fileToEncode.toPath())) {
-            encoderErrorLabel.setText("Selected file to encode does not exist!");
+            encryptorErrorLabel.setText("Selected file to encrypt does not exist!");
             return false;
         }
-        if (publicKey == null) {
-            encoderErrorLabel.setText("Select public key!");
+        if (encryptorPublicKey == null) {
+            encryptorErrorLabel.setText("Select public key!");
             return false;
         }
-        if (!Files.exists(publicKey.toPath())) {
-            encoderErrorLabel.setText("Selected public key does not exist!");
+        if (!Files.exists(encryptorPublicKey.toPath())) {
+            encryptorErrorLabel.setText("Selected public key does not exist!");
             return false;
         }
-        if (encoderOutputPath.equals(emptyPath)) {
-            encoderErrorLabel.setText("Select output path!");
+        if (encryptorOutputPath.equals(emptyPath)) {
+            encryptorErrorLabel.setText("Select output path!");
             return false;
         }
-        if (!Files.exists(encoderOutputPath)) {
-            encoderErrorLabel.setText("Selected output path does not exist!");
+        if (!Files.exists(encryptorOutputPath)) {
+            encryptorErrorLabel.setText("Selected output path does not exist!");
             return false;
         }
         return true;
     }
 
-    private boolean decodeFormValidation(){
-        decoderErrorLabel.setText("");
+    private boolean decryptFormValidation(){
+        decryptorErrorLabel.setText("");
         Path emptyPath = Paths.get("");
-        String pin = pinField.getText();
+        String pin = decryptorPinField.getText();
         if (pin.isEmpty()) {
-            decoderErrorLabel.setText("Enter PIN!");
+            decryptorErrorLabel.setText("Enter PIN!");
             return false;
         }
         if (fileToDecode == null) {
-            decoderErrorLabel.setText("Select file to decode!");
+            decryptorErrorLabel.setText("Select file to decrypt!");
             return false;
         }
         if (!Files.exists(fileToDecode.toPath())) {
-            decoderErrorLabel.setText("Selected file to decode does not exist!");
+            decryptorErrorLabel.setText("Selected file to decrypt does not exist!");
             return false;
         }
-        if (privateKey == null) {
-            decoderErrorLabel.setText("Select private key!");
+        if (decryptorPrivateKey == null) {
+            decryptorErrorLabel.setText("Select private key!");
             return false;
         }
-        if (!Files.exists(privateKey.toPath())) {
-            decoderErrorLabel.setText("Selected private key does not exist!");
+        if (!Files.exists(decryptorPrivateKey.toPath())) {
+            decryptorErrorLabel.setText("Selected private key does not exist!");
             return false;
         }
-        if (decoderOutputPath.equals(emptyPath)) {
-            decoderErrorLabel.setText("Select output path!");
+        if (decryptorOutputPath.equals(emptyPath)) {
+            decryptorErrorLabel.setText("Select output path!");
             return false;
         }
-        if (!Files.exists(decoderOutputPath)) {
-            decoderErrorLabel.setText("Selected output path does not exist!");
+        if (!Files.exists(decryptorOutputPath)) {
+            decryptorErrorLabel.setText("Selected output path does not exist!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean signFormValidation(){
+        signerErrorLabel.setText("");
+        if (formSignPin.getText().isEmpty()) {
+            signerErrorLabel.setText("Enter PIN!");
+            return false;
+        }
+        if (formSignUsername.getText().isEmpty()) {
+            signerErrorLabel.setText("Enter username!");
+            return false;
+        }
+        if (formSignLocation.getText().isEmpty()) {
+            signerErrorLabel.setText("Enter location!");
+            return false;
+        }
+        if (fileToSign == null) {
+            signerErrorLabel.setText("Select file to sign!");
+            return false;
+        }
+        if (!Files.exists(fileToSign.toPath())) {
+            signerErrorLabel.setText("Selected file to sign does not exist!");
+            return false;
+        }
+        if (signerPrivateKey == null) {
+            signerErrorLabel.setText("Select private key!");
+            return false;
+        }
+        if (!Files.exists(signerPrivateKey.toPath())) {
+            signerErrorLabel.setText("Selected private key does not exist!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean verifySignatureFormValidation(){
+        verifySignatureErrorLabel.setText("");
+        if (fileToVerify == null) {
+            verifySignatureErrorLabel.setText("Select file to verify!");
+            return false;
+        }
+        if (!Files.exists(fileToVerify.toPath())) {
+            verifySignatureErrorLabel.setText("Selected file to verify does not exist!");
+            return false;
+        }
+        if (signerPublicKey == null) {
+            verifySignatureErrorLabel.setText("Select public key!");
+            return false;
+        }
+        if (!Files.exists(signerPublicKey.toPath())) {
+            verifySignatureErrorLabel.setText("Selected public key does not exist!");
+            return false;
+        }
+        if (signatureToVerify == null) {
+            verifySignatureErrorLabel.setText("Select signature to verify!");
+            return false;
+        }
+        if (!Files.exists(signatureToVerify.toPath())) {
+            verifySignatureErrorLabel.setText("Selected signature does not exist!");
             return false;
         }
         return true;

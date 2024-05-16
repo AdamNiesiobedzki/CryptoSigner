@@ -15,11 +15,17 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class RsaGenerator {
-
     private static final Random random = new SecureRandom();
     static ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
     private static final String algorithm = "AES/CBC/PKCS5Padding";
+
+    private static final byte[] SALT = {
+            (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44,
+            (byte) 0x55, (byte) 0x66, (byte) 0x77, (byte) 0x88,
+            (byte) 0x99, (byte) 0xAA, (byte) 0xBB, (byte) 0xCC,
+            (byte) 0xDD, (byte) 0xEE, (byte) 0xFF, (byte) 0x00
+    };
+
     public static KeyPair generateRsaKeys() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -36,28 +42,24 @@ public class RsaGenerator {
         KeyPair keyPair = generateRsaKeys();
         if (keyPair != null) {
             try (FileOutputStream publicKeyFile = new FileOutputStream(path.resolve("public_key.pem").toString());
-                 FileOutputStream privateKeyFile = new FileOutputStream(path.resolve("private_key.pem").toString());
-                 FileOutputStream privateKeyEncodedFile = new FileOutputStream(path.resolve("private_key_encoded.pem").toString())) {
+                 FileOutputStream privateKeyFile = new FileOutputStream(path.resolve("private_key.pem").toString())) {
                 byte[] publicKeyBytes = keyPair.getPublic().getEncoded();
                 byte[] privateKeyBytes = keyPair.getPrivate().getEncoded();
-                byte[] salt = getNextSalt();
-                SecretKey pinKey = getKeyFromPin(pin, salt);
+                SecretKey pinKey = getKeyFromPin(pin);
                 IvParameterSpec iv =  generateIv();
                 byte[] privateKeyEncryptedBytes = encrypt(privateKeyBytes, pinKey, iv);
-
-                privateKeyFile.write(privateKeyBytes);
                 publicKeyFile.write(publicKeyBytes);
-                privateKeyEncodedFile.write(privateKeyEncryptedBytes);
+                privateKeyFile.write(privateKeyEncryptedBytes);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static SecretKey getKeyFromPin(String pin, byte[] salt)
+    public static SecretKey getKeyFromPin(String pin)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(pin.toCharArray(), getNextSalt(), 65536, 256);
+        KeySpec spec = new PBEKeySpec(pin.toCharArray(), SALT, 65536, 256);
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 

@@ -8,42 +8,81 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="bsk.adamniesiobedzki.cryptosigner.MainController">
     <center>
         <SplitPane orientation="VERTICAL">
-            <VBox prefWidth="400" spacing="10">
-                <Text text="CryptoSigner"/>
-            </VBox>
-            <VBox prefWidth="400" spacing="10">
-                <Text text="Encoder"/>
+            <SplitPane orientation="HORIZONTAL">
+                <VBox prefWidth="400" spacing="10">
+                    <Text text="File Signer"/>
 
-                <Button text="Select public key file" onAction="#selectPublicKey"/>
-                <Label fx:id="publicKeyPathLabel"/>
+                    <Text text="Enter username:"/>
+                    <TextField promptText="Enter username" fx:id="formSignUsername"/>
 
-                <Button text="Select file to encode" onAction="#selectFileToEncode"/>
-                <Label fx:id="fileToEncodePathLabel"/>
+                    <Text text="Enter location:"/>
+                    <TextField promptText="Enter location" fx:id="formSignLocation"/>
 
-                <Button text="Select Output Folder" onAction="#selectEncoderOutputFolder"/>
-                <Label fx:id="encoderOutputPathLabel"/>
+                    <Text text="Enter pin:"/>
+                    <TextField promptText="Enter pin" fx:id="formSignPin"/>
 
-                <Button text="Encode file" onAction="#encodeFile"/>
-                <Label fx:id="encoderErrorLabel"/>
-            </VBox>
-            <VBox prefWidth="400" spacing="10">
-                <Text text="Decoder"/>
+                    <Button text="Select file to sign:" onAction="#selectFileToSign"/>
+                    <Label fx:id="fileToSignLabel"/>
 
-                <Text text="Enter PIN:"/>
-                <TextField promptText="Enter PIN" fx:id="pinField"/>
+                    <Button text="Select private key file" onAction="#selectSignPrivateKey"/>
+                    <Label fx:id="signerPrivateKeyPathLabel"/>
 
-                <Button text="Select private key file" onAction="#selectPrivateKey"/>
-                <Label fx:id="privateKeyPathLabel"/>
+                    <Button text="Sign file" onAction="#signFile"/>
+                    <Label fx:id="signerErrorLabel"/>
+                </VBox>
+                <VBox prefWidth="400" spacing="10">
+                    <Text text="Verify signature"/>
 
-                <Button text="Select file to decode" onAction="#selectFileToDecode"/>
-                <Label fx:id="fileToDecodePathLabel"/>
+                    <Button text="Select signature to verify" onAction="#selectSignatureToVerify"/>
+                    <Label fx:id="signerSignaturePathLabel"/>
 
-                <Button text="Select Output Folder" onAction="#selectDecoderOutputFolder"/>
-                <Label fx:id="decoderOutputPathLabel"/>
+                    <Button text="Select file to verify" onAction="#selectFileToVerify"/>
+                    <Label fx:id="signerFileToVerifyPathLabel"/>
 
-                <Button text="Decode file" onAction="#decodeFile"/>
-                <Label fx:id="decoderErrorLabel"/>
-            </VBox>
+                    <Button text="Select public key file" onAction="#selectSignPublicKey"/>
+                    <Label fx:id="signerPublicKeyPathLabel"/>
+
+                    <Button text="Verify signature" onAction="#verifySignature"/>
+
+                    <Label fx:id="verifySignatureErrorLabel"/>
+                </VBox>
+            </SplitPane>
+            <SplitPane orientation="HORIZONTAL">
+                <VBox prefWidth="400" spacing="10">
+                    <Text text="Encryptor"/>
+
+                    <Button text="Select public key file" onAction="#selectEncryptorPublicKey"/>
+                    <Label fx:id="encryptorPublicKeyPathLabel"/>
+
+                    <Button text="Select file to encode" onAction="#selectFileToEncode"/>
+                    <Label fx:id="fileToEncryptPathLabel"/>
+
+                    <Button text="Select Output Folder" onAction="#selectEncryptorOutputFolder"/>
+                    <Label fx:id="encryptorOutputPathLabel"/>
+
+                    <Button text="Encrypt file" onAction="#encryptFile"/>
+                    <Label fx:id="encryptorErrorLabel"/>
+                </VBox>
+                <VBox prefWidth="400" spacing="10">
+                    <Text text="Decryptor"/>
+
+                    <Text text="Enter PIN:"/>
+                    <TextField promptText="Enter PIN" fx:id="decryptorPinField"/>
+
+                    <Button text="Select private key file" onAction="#selectPrivateKey"/>
+                    <Label fx:id="decryptorPrivateKeyPathLabel"/>
+
+                    <Button text="Select file to decode" onAction="#selectFileToDecode"/>
+                    <Label fx:id="fileToDecryptPathLabel"/>
+
+                    <Button text="Select Output Folder" onAction="#selectDecryptorOutputFolder"/>
+                    <Label fx:id="decryptorOutputPathLabel"/>
+
+                    <Button text="Decrypt file" onAction="#decryptFile"/>
+                    <Label fx:id="decryptorErrorLabel"/>
+                </VBox>
+            </SplitPane>
         </SplitPane>
+
     </center>
 </BorderPane>
