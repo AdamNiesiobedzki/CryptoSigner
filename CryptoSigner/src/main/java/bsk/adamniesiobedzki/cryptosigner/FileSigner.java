@@ -126,7 +126,7 @@ public class FileSigner {
         signedProperties.appendChild(signedDataObjectProperties);
 
         Element signedFileSize = doc.createElement("FileSize");
-        signedFileSize.appendChild(doc.createTextNode(String.valueOf(signedFile.getTotalSpace())));
+        signedFileSize.appendChild(doc.createTextNode(String.valueOf(signedFile.length())));
         signedDataObjectProperties.appendChild(signedFileSize);
 
         Element signedFileExtension = doc.createElement("FileExtension");

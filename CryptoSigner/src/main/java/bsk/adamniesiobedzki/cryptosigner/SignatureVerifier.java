@@ -80,7 +80,7 @@ public class SignatureVerifier {
     }
 
     public static boolean verifySignatureFileSize(Document signature, File inputFile){
-        String inputFileSize = String.valueOf(inputFile.getTotalSpace());
+        String inputFileSize = String.valueOf(inputFile.length());
         String fileSize = getElementByName(signature, "FileSize").getTextContent();
         return fileSize.equals(inputFileSize);
     }
