@@ -9,6 +9,7 @@ module bsk.adamniesiobedzki.cryptosigner {
     requires org.bouncycastle.provider;
     requires java.xml;
     requires java.xml.crypto;
+    requires usbdrivedetector;
 
     opens bsk.adamniesiobedzki.cryptosigner to javafx.fxml;
     exports bsk.adamniesiobedzki.cryptosigner;

@@ -1,5 +1,6 @@
 package bsk.adamniesiobedzki.cryptosigner;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -15,6 +16,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.samuelcampos.usbdrivedetector.USBDeviceDetectorManager;
+import net.samuelcampos.usbdrivedetector.events.IUSBDriveListener;
+import net.samuelcampos.usbdrivedetector.events.USBStorageEvent;
 
 public class MainController {
     @FXML
@@ -63,6 +71,46 @@ public class MainController {
     private File fileToSign = null;
     private File fileToVerify = null;
     private File signatureToVerify = null;
+
+
+    public class USBDriveListener implements IUSBDriveListener{
+        @Override
+        public void usbDriveEvent(USBStorageEvent usbStorageEvent) {
+            Platform.runLater(() -> {
+                String privateKeyPath = extractRootDirectory(usbStorageEvent.toString()) + "private_key.pem";
+                if (!Files.exists(Path.of(privateKeyPath))) {
+                    decryptorErrorLabel.setText("There is no private key file on USB device");
+                    signerErrorLabel.setText("There is no private key file on USB device");
+                    return;
+                }
+                File privateKeyFile = new File(privateKeyPath);
+                signerPrivateKey = privateKeyFile;
+                decryptorPrivateKey = privateKeyFile;
+                signerPrivateKeyPathLabel.setText(privateKeyPath);
+                decryptorPrivateKeyPathLabel.setText(privateKeyPath);
+            });
+        }
+
+        private String extractRootDirectory(String eventString) {
+            String regex = "rootDirectory=([^,]+)";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(eventString);
+
+            if (matcher.find()) {
+                return matcher.group(1);
+            } else {
+                return "Root Directory not found";
+            }
+        }
+    }
+
+    public void detectUsbDevice(){
+        signerPrivateKeyPathLabel.setText("Plug in USB device with private key");
+        decryptorPrivateKeyPathLabel.setText("Plug in USB device with private key");
+        USBDeviceDetectorManager driveDetector = new USBDeviceDetectorManager();
+        IUSBDriveListener usbDriveListener = new USBDriveListener();
+        driveDetector.addDriveListener(usbDriveListener);
+    }
 
 
     public void selectEncryptorPublicKey() {

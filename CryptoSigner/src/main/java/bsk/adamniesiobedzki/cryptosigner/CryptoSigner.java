@@ -14,6 +14,8 @@ public class CryptoSigner extends Application {
         stage.setTitle("CryptoSigner");
         stage.setScene(new Scene(fxmlLoader.load(), 1080, 900));
         stage.show();
+        MainController controller = fxmlLoader.getController();
+        controller.detectUsbDevice();
     }
 
     public static void main(String[] args) {

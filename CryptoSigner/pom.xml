@@ -74,6 +74,11 @@
             <artifactId>bcprov-jdk18on</artifactId>
             <version>1.76</version>
         </dependency>
+        <dependency>
+            <groupId>net.samuelcampos</groupId>
+            <artifactId>usbdrivedetector</artifactId>
+            <version>2.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
